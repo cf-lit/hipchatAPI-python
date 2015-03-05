@@ -2,9 +2,7 @@
 
 Python Hipchat API
 
-More information is comming...
-
-Just used for notes at the mo! 
+Just used for notes at the mo! More information comming...
 
 # Hipchat V1 token:
 https://hipchat.com/admin/api
