@@ -7,12 +7,11 @@ import json
 import pycurl
 import pprint
 from StringIO import StringIO
-import urllib2
 
 class Hipchat:
 
 	hipchat_url = "https://api.hipchat.com/v2/"
-	hipchat_header = {'content-type': 'application/json'}
+	hipchat_header = ["content-type:", "application/json"]
 
 	def __init__(self, hipchat_token):
 		#
@@ -21,29 +20,35 @@ class Hipchat:
 
 
 	#
-	# Users
-	## 
+	# User Methods
+	################### 
 	
 	#
-	# list users
+	# Get users
+	# https://www.hipchat.com/docs/apiv2/method/get_all_users
 	##
-	def list_users(self):
-	
-		#buffer = StringIO()
-		#post_data = {'': 'value'}
-		#c = pycurl.Curl()
-		#c.setopt(c.URL, self.hipchat_url+"user/?auth_token="+self.hipchat_token)
-		#c.setopt(c.HTTPHEADER, self.hipchat_header)
-		#c.setopt(c.WRITEDATA, buffer)
-		#c.perform()
-		#c.close()
-		#return buffer.getvalue()
-		
-		data = json.dumps({'start-index': 0, 'max-results': 100, 'include-guests': 0, 'include-deleted': 0})
-		#request = urllib2.Request(self.hipchat_url+"user?auth_token="+self.hipchat_token, data, self.hipchat_header)
-		request = urllib2.Request(self.hipchat_url+"room?auth_token="+self.hipchat_token)
-		print self.hipchat_url+"room?auth_token="+self.hipchat_token
-		return urllib2.urlopen(request)
+	def get_all_users(self):
+		buffer = StringIO()
+		c = pycurl.Curl()
+		c.setopt(c.URL, self.hipchat_url+"user?auth_token="+self.hipchat_token)
+		c.setopt(c.HTTPHEADER, self.hipchat_header)
+		c.setopt(c.WRITEDATA, buffer)
+		c.perform()
+		c.close()
+		return buffer.getvalue()
+
+	#
+	# Create user
+	# https://www.hipchat.com/docs/apiv2/method/create_user
+	##
+	def create_user(self,
+			name,
+			title="",
+			mention_name="",
+			is_group_admin=False,
+			timezone='UTC'
+			password,
+			email ):
 		
 
 #
@@ -51,7 +56,7 @@ class Hipchat:
 conf = json.load(open('hipchat_conf.json'))
 
 test = Hipchat(conf['hipchat_token'])
-res = test.list_users()
+result = test.list_users()
 
-print res.read()
+print json.dumps(json.loads(result), indent=4, sort_keys=True)
 
