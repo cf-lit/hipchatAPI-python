@@ -41,22 +41,24 @@ class Hipchat:
 	# Create user
 	# https://www.hipchat.com/docs/apiv2/method/create_user
 	##
-	def create_user(self,
-			name,
-			title="",
-			mention_name="",
-			is_group_admin=False,
-			timezone='UTC'
-			password,
-			email ):
-		
+	def create_user(self, name, email, password, title="", mention_name="", is_group_admin=False, timezone='UTC'):
+		post_data = json.dumps({'name': name, 'password': password, 'email': email, 'title': title, 'mention_name': mention_name, 'is_group_admin': is_group_admin, 'timezone': timezone})
+		buffer = StringIO()
+		c = pycurl.Curl()
+		c.setopt(c.URL, self.hipchat_url+"user?auth_token="+self.hipchat_token)
+		c.setopt(c.HTTPHEADER, self.hipchat_header)
+		c.setopt(c.POSTFIELDS, post_data)
+		c.perform()  
+                c.close() 
+		return buffer.getvalue()	
 
 #
 # Testing
 conf = json.load(open('hipchat_conf.json'))
 
 test = Hipchat(conf['hipchat_token'])
-result = test.list_users()
+#test.create_user("Joe Blogs", "colinhenryfraser@yahoo.co.uk", "Ugs673jdjke")
+result = test.get_all_users()
 
 print json.dumps(json.loads(result), indent=4, sort_keys=True)
 
