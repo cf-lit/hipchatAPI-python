@@ -65,6 +65,14 @@ class Hipchat:
 		url = self.hipchat_url+"user?auth_token="+self.hipchat_token
 		return self.get(url)
 
+	def get_user_id(self, mention_name):
+		all_users = json.loads(self.get_all_users())
+		for user in all_users['items']:
+			if (user['mention_name'] == mention_name) or (user['name'] == mention_name):
+				return user['id']
+		return False
+		
+
 	#
 	# Create User
 	# https://www.hipchat.com/docs/apiv2/method/create_user
@@ -78,9 +86,13 @@ class Hipchat:
 	# Delete User
 	# https://www.hipchat.com/docs/apiv2/method/delete_user
 	##
-	def delete_user(self, id_or_email):
-		url = self.hipchat_url+"user/"+id_or_email+"?auth_token="+self.hipchat_token
-                return self.delete(url)
+	def delete_user(self, mention_name):
+		user_id = str(self.get_user_id(mention_name))
+		if user_id != False:
+			url = self.hipchat_url+"user/"+user_id+"?auth_token="+self.hipchat_token
+                	return self.delete(url)
+		else:
+			return False
 
 
 #
@@ -89,11 +101,11 @@ conf = json.load(open('hipchat_conf.json'))
 
 test = Hipchat(conf['hipchat_token'])
 
-print  json.dumps(test.create_user("Joe Blogs", "joblogs@yahoo.co.uk", "Ugs673jdjke"), indent=4, sort_keys=True)
+print  json.dumps(test.create_user("Joe Blogs", "joblogs@blogs.co.uk", "Ugs673jdjke"), indent=4, sort_keys=True)
 
 print json.dumps(json.loads(test.get_all_users()), indent=4, sort_keys=True)
 
-print  json.dumps(test.delete_user("1878931"), indent=4, sort_keys=True)
+print  json.dumps(test.delete_user("Joe Blogs"), indent=4, sort_keys=True)
 
 print json.dumps(json.loads(test.get_all_users()), indent=4, sort_keys=True)
 
